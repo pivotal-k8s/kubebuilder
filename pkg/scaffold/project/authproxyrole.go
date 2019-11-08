@@ -38,7 +38,8 @@ func (r *AuthProxyRole) GetInput() (input.Input, error) {
 	return r.Input, nil
 }
 
-var proxyRoleTemplate = `apiVersion: rbac.authorization.k8s.io/v1
+var proxyRoleTemplate = `{{ .Boilerplate }}
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: proxy-role

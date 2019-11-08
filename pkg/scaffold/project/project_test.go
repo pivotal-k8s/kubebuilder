@@ -33,6 +33,20 @@ var _ = Describe("Project", func() {
 		year = strconv.Itoa(time.Now().Year())
 	})
 
+	FDescribe("scafolding a yaml boilerplate file", func() {
+
+		BeforeEach(func() {
+			goldenPath = filepath.Join("hack", "boilerplate.yml.txt")
+			writeToPath = goldenPath
+		})
+
+		It("should match the golden file", func() {
+			instance := &project.Boilerplate{Year: year, License: "apache2", Owner: "The Kubernetes authors", Input: input.Input{Path: writeToPath}}
+			Expect(s.Execute(&model.Universe{}, input.Options{}, instance)).NotTo(HaveOccurred())
+			Expect(result.Actual.String()).To(BeEquivalentTo(result.Golden))
+		})
+	})
+
 	Describe("scaffolding a boilerplate file", func() {
 		BeforeEach(func() {
 			goldenPath = filepath.Join("hack", "boilerplate.go.txt")

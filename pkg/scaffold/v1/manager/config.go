@@ -40,7 +40,8 @@ func (c *Config) GetInput() (input.Input, error) {
 	return c.Input, nil
 }
 
-var configTemplate = `apiVersion: v1
+var configTemplate = `{{ .Boilerplate }}
+apiVersion: v1
 kind: Namespace
 metadata:
   labels:

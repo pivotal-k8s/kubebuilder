@@ -46,6 +46,7 @@ type Input struct {
 
 	// BoilerplatePath is the path to a Boilerplate go header file
 	BoilerplatePath string
+	//TODO where is this used?
 
 	// Version is the project version
 	Version string
@@ -89,7 +90,7 @@ func (i *Input) SetRepo(r string) {
 // Boilerplate allows boilerplate text to be set on an object
 type Boilerplate interface {
 	// SetBoilerplate sets the boilerplate text
-	SetBoilerplate(string)
+	SetBoilerplate(map[string]string)
 }
 
 // SetBoilerplate sets the boilerplate text
@@ -102,7 +103,7 @@ func (i *Input) SetBoilerplate(b string) {
 // BoilerplatePath allows boilerplate file path to be set on an object
 type BoilerplatePath interface {
 	// SetBoilerplatePath sets the boilerplate file path
-	SetBoilerplatePath(string)
+	SetBoilerplatePath(map[string]string)
 }
 
 // SetBoilerplatePath sets the boilerplate file path
@@ -153,7 +154,7 @@ type Validate interface {
 // Options are the options for executing scaffold templates
 type Options struct {
 	// BoilerplatePath is the path to the boilerplate file
-	BoilerplatePath string
+	BoilerplatePath map[string]string
 
 	// Path is the path to the project
 	ProjectPath string

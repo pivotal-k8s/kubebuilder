@@ -51,7 +51,8 @@ func (c *Kustomize) GetInput() (input.Input, error) {
 	return c.Input, nil
 }
 
-var kustomizeTemplate = `# Adds namespace to all resources.
+var kustomizeTemplate = `{{ .Boilerplate }}
+# Adds namespace to all resources.
 namespace: {{.Prefix}}-system
 
 # Value of this field is prepended to the
@@ -73,7 +74,7 @@ bases:
 #- ../webhook
 # [CERTMANAGER] To enable cert-manager, uncomment all sections with 'CERTMANAGER'. 'WEBHOOK' components are required.
 #- ../certmanager
-# [PROMETHEUS] To enable prometheus monitor, uncomment all sections with 'PROMETHEUS'. 
+# [PROMETHEUS] To enable prometheus monitor, uncomment all sections with 'PROMETHEUS'.
 #- ../prometheus
 
 patchesStrategicMerge:

@@ -42,17 +42,19 @@ type Boilerplate struct {
 
 // GetInput implements input.File
 func (c *Boilerplate) GetInput() (input.Input, error) {
+	//TODO for yml, c.Input.Path should be boilerplate.yml.txt
 	if c.Path == "" {
 		c.Path = filepath.Join("hack", "boilerplate.go.txt")
 	}
 
 	// Boilerplate given
-	if len(c.Boilerplate) > 0 {
+	if c.Boilerplate == "" {
 		c.TemplateBody = c.Boilerplate
 		return c.Input, nil
 	}
 
 	// Pick a template boilerplate option
+	//TODO will probably need to switch on language? something else? as this template does not work for yml files
 	if c.Year == "" {
 		c.Year = fmt.Sprintf("%v", time.Now().Year())
 	}
@@ -68,6 +70,7 @@ func (c *Boilerplate) GetInput() (input.Input, error) {
 var apache = `/*
 {{ if .Owner }}Copyright {{ .Year }} {{ .Owner }}.
 {{ end }}
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -79,6 +82,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
 */`
 
 var none = `/*

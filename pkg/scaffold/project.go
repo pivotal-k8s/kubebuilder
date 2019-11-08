@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"sigs.k8s.io/kubebuilder/cmd/util"
@@ -108,11 +109,21 @@ func (p *V1Project) Scaffold() error {
 		return err
 	}
 
+	otherBoilerplate := &project.Boilerplate{}
+	otherBoilerplate.Path = filepath.Join("hack", "boilerplate.yml.txt")
+
+	opts := input.Options{ProjectPath: projectInput.Path}
+	opts.BoilerplatePath = map[string]string{
+		"go":   bpInput.Path,
+		"yml": otherBoilerplate.Path,
+	}
+
 	err = s.Execute(
 		p.buildUniverse(),
-		input.Options{ProjectPath: projectInput.Path, BoilerplatePath: bpInput.Path},
+		opts,
 		&p.Project,
 		&p.Boilerplate,
+		otherBoilerplate,
 	)
 	if err != nil {
 		return err
@@ -124,7 +135,7 @@ func (p *V1Project) Scaffold() error {
 	s = &Scaffold{}
 	return s.Execute(
 		p.buildUniverse(),
-		input.Options{ProjectPath: projectInput.Path, BoilerplatePath: bpInput.Path},
+		opts,
 		&project.GitIgnore{},
 		&project.KustomizeRBAC{},
 		&scaffoldv1.KustomizeImagePatch{},
@@ -199,11 +210,21 @@ func (p *V2Project) Scaffold() error {
 		return err
 	}
 
+	otherBoilerplate := &project.Boilerplate{}
+	otherBoilerplate.Path = filepath.Join("hack", "boilerplate.yml.txt")
+
+	opts := input.Options{ProjectPath: projectInput.Path}
+	opts.BoilerplatePath = map[string]string{
+		"go":   bpInput.Path,
+		"yml": otherBoilerplate.Path,
+	}
+
 	err = s.Execute(
 		p.buildUniverse(),
-		input.Options{ProjectPath: projectInput.Path, BoilerplatePath: bpInput.Path},
+		opts,
 		&p.Project,
 		&p.Boilerplate,
+		otherBoilerplate,
 	)
 	if err != nil {
 		return err
@@ -215,7 +236,7 @@ func (p *V2Project) Scaffold() error {
 	s = &Scaffold{}
 	return s.Execute(
 		p.buildUniverse(),
-		input.Options{ProjectPath: projectInput.Path, BoilerplatePath: bpInput.Path},
+		opts,
 		&project.GitIgnore{},
 		&metricsauthv2.KustomizeAuthProxyPatch{},
 		&scaffoldv2.AuthProxyService{},

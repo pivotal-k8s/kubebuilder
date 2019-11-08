@@ -39,6 +39,7 @@ func (c *KustomizeManager) GetInput() (input.Input, error) {
 	return c.Input, nil
 }
 
-var kustomizeManagerTemplate = `resources:
+var kustomizeManagerTemplate = `{{ .Boilerplate }}
+resources:
 - manager.yaml
 `

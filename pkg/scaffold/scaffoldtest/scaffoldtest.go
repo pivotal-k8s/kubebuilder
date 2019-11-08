@@ -18,12 +18,13 @@ package scaffoldtest
 
 import (
 	"bytes"
+	"fmt"
+	"go/build"
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
-	"go/build"
 
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
@@ -65,7 +66,9 @@ func Options() input.Options {
 
 // NewTestScaffold returns a new Scaffold and TestResult instance for testing
 func NewTestScaffold(writeToPath, goldenPath string) (*scaffold.Scaffold, *TestResult) {
+	fmt.Printf("called NewTestScaffold with writeToPath=%s, goldenPath=%s\n", writeToPath, goldenPath)
 	projRoot := getProjectRoot()
+	fmt.Println(projRoot)
 	r := &TestResult{}
 	// Setup scaffold
 	s := &scaffold.Scaffold{
@@ -75,6 +78,7 @@ func NewTestScaffold(writeToPath, goldenPath string) (*scaffold.Scaffold, *TestR
 			return &r.Actual, nil
 		},
 		FileExists: func(path string) bool {
+			fmt.Printf("testing path '%s' against '%s'\n", path, writeToPath)
 			return path != writeToPath
 		},
 		ProjectPath: filepath.Join(projRoot, "testdata", "gopath", "src", "project"),

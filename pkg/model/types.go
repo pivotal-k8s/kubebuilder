@@ -6,7 +6,7 @@ import (
 
 // Universe describes the entire state of file generation
 type Universe struct {
-	Boilerplate string `json:"boilerplate,omitempty"`
+	Boilerplate map[string]string `json:"boilerplate,omitempty"`
 
 	Resource *Resource `json:"resource,omitempty"`
 

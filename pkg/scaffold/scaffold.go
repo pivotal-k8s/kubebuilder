@@ -37,10 +37,10 @@ import (
 // Scaffold writes Templates to scaffold new files
 type Scaffold struct {
 	// BoilerplatePath is the path to the boilerplate file
-	BoilerplatePath string
+	BoilerplatePath map[string]string
 
 	// Boilerplate is the contents of the boilerplate file for code generation
-	Boilerplate string
+	Boilerplate map[string]string
 
 	BoilerplateOptional bool
 
@@ -130,15 +130,24 @@ func saveProjectFile(path string, project *input.ProjectFile) error {
 }
 
 // GetBoilerplate reads the boilerplate file
-func getBoilerplate(path string) (string, error) {
-	b, err := ioutil.ReadFile(path) // nolint: gosec
-	return string(b), err
+func getBoilerplate(paths map[string]string) (map[string]string, error) {
+	bps := map[string]string{}
+	for lang, path := range paths {
+		b, err := ioutil.ReadFile(path) // nolint: gosec
+		if err != nil {
+			return map[string]string{}, err
+		}
+		bps[lang] = string(b)
+	}
+
+	return bps, nil
 }
 
 func (s *Scaffold) defaultOptions(options *input.Options) error {
 	// Use the default Boilerplate path if unset
-	if options.BoilerplatePath == "" {
-		options.BoilerplatePath = filepath.Join("hack", "boilerplate.go.txt")
+	if len(options.BoilerplatePath) == 0 {
+		options.BoilerplatePath["go"] = filepath.Join("hack", "boilerplate.go.txt")
+		options.BoilerplatePath["yml"] = filepath.Join("hack", "boilerplate.yml.txt")
 	}
 
 	// Use the default Project path if unset
@@ -149,6 +158,7 @@ func (s *Scaffold) defaultOptions(options *input.Options) error {
 	s.BoilerplatePath = options.BoilerplatePath
 
 	var err error
+
 	s.Boilerplate, err = getBoilerplate(options.BoilerplatePath)
 	if !s.BoilerplateOptional && err != nil {
 		return err
@@ -174,7 +184,7 @@ func (s *Scaffold) Execute(u *model.Universe, options input.Options, files ...in
 		}
 	}
 
-	if u.Boilerplate == "" {
+	if len(u.Boilerplate) == 0 {
 		u.Boilerplate = s.Boilerplate
 	}
 
@@ -196,6 +206,7 @@ func (s *Scaffold) Execute(u *model.Universe, options input.Options, files ...in
 	}
 
 	for _, f := range u.Files {
+		fmt.Printf("Maybe generating a file at %s?\n", f.Path)
 		if err := s.writeFile(f); err != nil {
 			return err
 		}
@@ -281,7 +292,29 @@ func (s *Scaffold) doTemplate(i input.Input, e input.File) ([]byte, error) {
 	}
 
 	out := &bytes.Buffer{}
-	err = temp.Execute(out, e)
+
+	//by this point, e.Boilerplate needs to hold the "right" string
+	// x := e.(input.Input)
+	//
+	bp := i.Boilerplate
+
+	//TODO should check: go? yml? else default
+	if bp == "" {
+		if filepath.Ext(i.Path) == ".yml" {
+			bp = s.Boilerplate["yml"]
+		} else {
+			bp = s.Boilerplate["go"]
+		}
+	}
+	templateVars := struct {
+		input.File
+		Boilerplate string
+	}{
+		e,
+		bp,
+	}
+
+	err = temp.Execute(out, templateVars)
 	if err != nil {
 		return nil, err
 	}
